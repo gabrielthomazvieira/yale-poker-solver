@@ -68,7 +68,7 @@ The system consists of:
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/gabrielthomazvieira/yale-poker-solver.git](https://github.com/gabrielthomazvieira/yale-poker-solver.git)
+    git clone https://github.com/gabrielthomazvieira/yale-poker-solver.git
     cd yale-poker-solver
     ```
 2.  **Install dependencies:**
