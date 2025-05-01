@@ -102,7 +102,7 @@ The system consists of:
 
 ## License
 
-This project is licensed under the [Your License Name] License - see the LICENSE.md file for details.
+This project is licensed under the GNU Affero General Public License v3.0 License - see the LICENSE.md file for details.
 
 ## Acknowledgements
 
