@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         /* ---------- send to DeepSeek (w/ timeout + thinking bubble) ---- */
         const deepseekPrompt = `${promptText}\n\n` +
-            'Reply to the user prompt concisely in 1-2 short sentences in American English. ' +
+            'Reply to the user prompt concisely in 2 short sentences in American English. ' +
             'Integrate the hand strength information when appropriate in your response.' +
             'Equities and EVs are mostly approximate, so avoid minute decimal comparisons.' +
             'Do not try to explain the reasoning why a certain action is optimal. Only provide the quantitative hand strength information you are given.' +

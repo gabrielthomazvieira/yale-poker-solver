@@ -9,19 +9,15 @@ const fetch = (...args) =>
     import('node-fetch').then(({default: fetch}) => fetch(...args));
 require('dotenv').config();
 
+// Paths working for the packaged application
 
-// --- Reliable Paths ---
-
-// 1. User Data Path
 const USER_DATA_PATH = app.getPath('userData');
-
-// 2. Resources Path
 const RESOURCES_PATH = process.resourcesPath;
 
 // --- Writable Operational Paths ---
 const OPERATIONAL_INSTALL_DIR = path.join(USER_DATA_PATH, 'install');
 const OPERATIONAL_EQUITY_DIR = path.join(USER_DATA_PATH, 'equity_calculator');
-const INPUT_JSON_PATH =
+const INPUT_JSON_PATH =  
     path.join(OPERATIONAL_INSTALL_DIR, 'resources', 'text', 'input.json');
 const SAMPLE_DIR = path.join(USER_DATA_PATH, 'sample_solutions');
 const OPERATIONAL_QUERY_SCRIPT =
@@ -30,18 +26,17 @@ const WORKING_MSGPACK_PATH = path.join(USER_DATA_PATH, 'output_result.msgpack');
 const WORKING_MSGPACK_IDX_PATH =
     path.join(USER_DATA_PATH, 'output_result.msgpack.midx');
 const LOCAL_EQUITY_DOWNLOAD_DIR =
-    path.join(USER_DATA_PATH, 'equity_results_temp');
+    path.join(USER_DATA_PATH, 'equity_calculator');
 
-// --- Template/Source Paths (Read-Only, relative to RESOURCES_PATH) ---
+// --- Template/Source Paths (Read-Only, relative to RESOURCES_PATH)
 const TEMPLATE_INSTALL_DIR = path.join(RESOURCES_PATH, 'install');
 const TEMPLATE_EQUITY_DIR = path.join(RESOURCES_PATH, 'equity_calculator')
 
 // --- Initialization Function ---
-// --- Initialization Function with Detailed Logging ---
+// Intensive logs for debugging
 async function initializeAppData() {
   console.log('--- Starting App Data Initialization ---');
   console.log('User Data Path:', USER_DATA_PATH);
-  // Log the conditional paths being used for clarity
   console.log(`Template Install Source Path: ${TEMPLATE_INSTALL_DIR}`);
   console.log(`Template Equity Source Path: ${TEMPLATE_EQUITY_DIR}`);
   console.log('----------------------------------------');
@@ -49,13 +44,13 @@ async function initializeAppData() {
   const itemsToInitialize = [
     {
       type: 'dir',
-      source: TEMPLATE_INSTALL_DIR,  // Uses the conditionally determined path
+      source: TEMPLATE_INSTALL_DIR,
       destination: OPERATIONAL_INSTALL_DIR,
       name: 'Install Directory'
     },
     {
       type: 'dir',
-      source: TEMPLATE_EQUITY_DIR,  // Uses the conditionally determined path
+      source: TEMPLATE_EQUITY_DIR,
       destination: OPERATIONAL_EQUITY_DIR,
       name: 'Equity Calculator'
     },
@@ -75,7 +70,6 @@ async function initializeAppData() {
       if (!fs.existsSync(item.destination)) {
         console.log(`-> Destination DOES NOT exist. Initializing...`);
 
-        // Check if this item needs to be copied from a source template
         if (item.source) {
           console.log(`   Source Path: ${item.source}`);
           console.log(`   Checking if Source exists...`);
@@ -84,34 +78,27 @@ async function initializeAppData() {
             console.log(`   -> Source DOES exist.`);
             console.log(`   Attempting: fse.copy(...)`);
             try {
-              // The critical copy operation
               await fse.copy(item.source, item.destination);
-              // Verify copy by checking destination again
               if (fs.existsSync(item.destination)) {
                 console.log(
                     `   SUCCESS: Copied ${item.source} to ${item.destination}`);
               } else {
-                // This would be very strange
                 console.error(
                     `   ERROR: fse.copy reported no error, but destination ${
                         item.destination} still doesn't exist!`);
                 throw new Error(`Copy verification failed for ${item.name}`);
               }
             } catch (copyError) {
-              // Log the specific copy error prominently
               console.error(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
               console.error(`   ERROR during fse.copy for ${item.name}:`);
-              console.error(copyError);  // Log the full error object
+              console.error(copyError);
               console.error(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
               dialog.showErrorBox(
                   'Initialization Copy Error',
                   `Failed to copy '${item.name}' from '${item.source}' to '${
                       item.destination}'.\n\nError: ${copyError.message}`);
-              // It's crucial to stop if a required copy fails
-              return;  // Stop initialization
             }
           } else {
-            // Source template doesn't exist - this is fatal
             console.error(`   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
             console.error(`   FATAL: Source template '${item.source}' for '${
                 item.name}' was NOT found.`);
@@ -124,10 +111,9 @@ async function initializeAppData() {
                 'Initialization Error - Missing Template',
                 `Required template files ('${item.source}') for '${
                     item.name}' are missing from the application package.\n\nPlease check the application integrity or build configuration.`);
-            return;  // Stop initialization
+            return;  
           }
         } else {
-          // No source template - just create the directory
           console.log(`   No source specified. Creating directory...`);
           try {
             fs.mkdirSync(item.destination, {recursive: true});
@@ -141,15 +127,13 @@ async function initializeAppData() {
                 'Initialization Directory Creation Error',
                 `Failed to create directory '${item.destination}' for '${
                     item.name}'.\n\nError: ${mkdirError.message}`);
-            return;  // Stop initialization
+            return;  
           }
         }
       } else {
-        // Destination already exists
         console.log(`-> Destination ALREADY exists.`);
       }
     } catch (err) {
-      // Catch any unexpected errors during the checks for this item
       console.error(`!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`);
       console.error(`   UNEXPECTED ERROR while processing ${item.name} at ${
           item.destination}:`);
@@ -159,7 +143,7 @@ async function initializeAppData() {
           'Unexpected Initialization Error',
           `An unexpected error occurred while initializing '${
               item.name}'.\n\nError: ${err.message}`);
-      return;  // Stop initialization on error
+      return;  
     }
     console.log(`--- Finished Processing: ${item.name} ---`);
   }
@@ -167,7 +151,6 @@ async function initializeAppData() {
   console.log('\n--- App data initialization check complete. ---');
 }
 
-// Map Unicode suits to letters.
 const suitMapping = {
   '♣': 'c',
   '♦': 'd',
@@ -175,7 +158,6 @@ const suitMapping = {
   '♠': 's'
 };
 
-// Map letters to Unicode suits
 const suitMappingUnicode = {
   c: '♣',
   d: '♦',
@@ -223,17 +205,44 @@ const LZ = (() => {
   /** public API used by IPC */
   return {
     init(msgpackPath) {
-      loadIndex(msgpackPath);
-      FD = fs.openSync(msgpackPath, 'r');
-      ROOT = getSlice('');  // root object (few KB)
-      return ROOT;
+      console.log(`[LZ init] Initializing with path: ${msgpackPath}`);
+      try {
+        loadIndex(msgpackPath);
+        FD = fs.openSync(msgpackPath, 'r');
+        ROOT = getSlice('');  // root object (few KB)
+        console.log(`[LZ init] Root node loaded successfully.`);
+        return ROOT;
+      } catch (error) {
+        console.error(`[LZ init] FAILED to initialize: ${error.message}`);
+        this.close();  // Clean up if initialization fails
+        throw error;   // Re-throw error
+      }
     },
     subtree(path) {
+      if (!FD) {
+        console.error(
+            '[LZ subtree] Attempted to get subtree, but LZ is not initialized.');
+        throw new Error('LZ is not initialized or has been closed.');
+      }
       if (path === '') return ROOT;
-      return getSlice(path);
+      try {
+        return getSlice(path);
+      } catch (error) {
+        console.error(`[LZ subtree] Error getting slice for path "${path}": ${
+            error.message}`);
+        return null;
+      }
     },
     close() {
-      if (FD) fs.closeSync(FD);
+      console.log('[LZ close] Closing LZ.');
+      if (FD !== null) {
+        try {
+          fs.closeSync(FD);
+        } catch (closeError) {
+          console.error(`[LZ close] Error closing file descriptor: ${
+              closeError.message}`);
+        }
+      }
       FD = null;
       MAP.clear();
       ROOT = null;
@@ -241,7 +250,7 @@ const LZ = (() => {
   };
 })();
 
-// Promisify exec for easier async/await usage
+
 const execPromise = util.promisify(exec);
 
 /** SSH options */
@@ -257,319 +266,498 @@ const SQLZ = (() => {
   /** Remote user@host */
   let SSH_USER_HOST = null;
   /** Path to the remote python query script */
-  const REMOTE_SCRIPT_PATH = '~/yale-poker/query_solver_db.py';
+  const REMOTE_SCRIPT_PATH = '~/yale-poker-solver/query_solver_db.py';
 
   /** Fetches nodes via SSH and decodes them */
   async function fetchNodesViaSSH(pathsToFetch) {
-      const logPrefix = '[SQLZ fetchNodesViaSSH]'; // Defined locally
-      pathsToFetch = pathsToFetch.map(p => p?.trim())
-          .filter(p => p !== undefined && p !== null);
-      if (pathsToFetch.length > 1) {
-          pathsToFetch = pathsToFetch.filter(p => p !== '');
-      }
-      if (pathsToFetch.length === 0) {
-          return new Map();
-      }
-      if (!REMOTE_DB_PATH || !SSH_USER_HOST) {
-          console.error(`${logPrefix} Error: SQLZ not initialized.`);
-          throw new Error('SQLZ not initialized with remote DB path or SSH user/host.');
+    const logPrefix = '[SQLZ fetchNodesViaSSH]';
+    pathsToFetch = pathsToFetch.map(p => p?.trim())
+                       .filter(p => p !== undefined && p !== null);
+    if (pathsToFetch.length > 1) {
+      pathsToFetch = pathsToFetch.filter(p => p !== '');
+    }
+    if (pathsToFetch.length === 0) {
+      return new Map();
+    }
+    if (!REMOTE_DB_PATH || !SSH_USER_HOST) {
+      console.error(`${logPrefix} Error: SQLZ not initialized.`);
+      throw new Error(
+          'SQLZ not initialized with remote DB path or SSH user/host.');
+    }
+
+    const displayPaths = pathsToFetch.length > 20 ?
+        `${pathsToFetch.slice(0, 10).join(', ')} ... (${
+            pathsToFetch.length} total)` :
+        pathsToFetch.join(', ');
+    console.log(`${logPrefix} Requesting fetch for ${
+        pathsToFetch.length} path(s): [${displayPaths}]`);
+
+    const pathsJsonString = JSON.stringify(pathsToFetch);
+    const pathsJsonBase64 = Buffer.from(pathsJsonString).toString('base64');
+    const remoteDbPathEscaped = `"${REMOTE_DB_PATH}"`;
+    const remoteScriptPathEscaped = `"${REMOTE_SCRIPT_PATH}"`;
+    const remoteCommand = `python3 ${remoteScriptPathEscaped} --db_path ${
+        remoteDbPathEscaped} --batch_json_base64 '${pathsJsonBase64}'`;
+    const sshCmd = `ssh ${SSH_OPTIONS} ${SSH_USER_HOST} "${remoteCommand}"`;
+
+    const results = new Map();
+    try {
+      const {stdout, stderr} = await execPromise(
+          sshCmd, {maxBuffer: 1024 * 1024 * 200, timeout: 120000});
+      if (stderr) {
+        console.warn(`${logPrefix} SSH command stderr: ${stderr}`);
       }
 
-      const displayPaths = pathsToFetch.length > 20 ?
-          `${pathsToFetch.slice(0, 10).join(', ')} ... (${pathsToFetch.length} total)` :
-          pathsToFetch.join(', ');
-      console.log(`${logPrefix} Requesting fetch for ${pathsToFetch.length} path(s): [${displayPaths}]`);
-
-      const pathsJsonString = JSON.stringify(pathsToFetch);
-      const pathsJsonBase64 = Buffer.from(pathsJsonString).toString('base64');
-      const remoteDbPathEscaped = `"${REMOTE_DB_PATH}"`;
-      const remoteScriptPathEscaped = `"${REMOTE_SCRIPT_PATH}"`;
-      const remoteCommand = `python3 ${remoteScriptPathEscaped} --db_path ${remoteDbPathEscaped} --batch_json_base64 '${pathsJsonBase64}'`;
-      const sshCmd = `ssh ${SSH_OPTIONS} ${SSH_USER_HOST} "${remoteCommand}"`;
-
-      const results = new Map();
+      let response;
       try {
-          const { stdout, stderr } = await execPromise(
-              sshCmd, { maxBuffer: 1024 * 1024 * 200, timeout: 120000 });
-          if (stderr) {
-              console.warn(`${logPrefix} SSH command stderr: ${stderr}`);
-          }
+        response = JSON.parse(stdout);
+      } catch (jsonError) {
+        console.error(`${logPrefix} Failed to parse JSON response. Length: ${
+            stdout.length}. Error: ${jsonError.message}`);
+        console.error(
+            `${logPrefix} Raw stdout: ${stdout.substring(0, 1000)}...`);
+        throw new Error(
+            `SQLZ JSON Parsing Error: ${jsonError.message}. Stderr: ${stderr}`);
+      }
 
-          let response;
+      if (response.error) {
+        console.error(`${logPrefix} Remote script error: ${response.error}`);
+        throw new Error(`SQLZ Remote script error: ${response.error}`);
+      }
+      if (!response.results || typeof response.results !== 'object') {
+        console.error(`${logPrefix} Invalid response format:`, response);
+        throw new Error(
+            'SQLZ Invalid response format: missing/invalid "results" key.');
+      }
+
+      const receivedCount = Object.keys(response.results).length;
+
+      for (const [path, base64Data] of Object.entries(response.results)) {
+        if (base64Data && typeof base64Data === 'string') {
           try {
-              response = JSON.parse(stdout);
-          } catch (jsonError) {
-              console.error(`${logPrefix} Failed to parse JSON response. Length: ${stdout.length}. Error: ${jsonError.message}`);
-              console.error(`${logPrefix} Raw stdout: ${stdout.substring(0, 1000)}...`);
-              throw new Error(`SQLZ JSON Parsing Error: ${jsonError.message}. Stderr: ${stderr}`);
+            const rawBlob = Buffer.from(base64Data, 'base64');
+            const decodedNode = msgpack.decode(rawBlob);
+            results.set(path, decodedNode);
+          } catch (processingError) {
+            console.error(`${logPrefix} Error processing data for path "${
+                path}": ${processingError.message}`);
+            results.set(path, null);
           }
-
-          if (response.error) {
-              console.error(`${logPrefix} Remote script error: ${response.error}`);
-              throw new Error(`SQLZ Remote script error: ${response.error}`);
-          }
-          if (!response.results || typeof response.results !== 'object') {
-              console.error(`${logPrefix} Invalid response format:`, response);
-              throw new Error('SQLZ Invalid response format: missing/invalid "results" key.');
-          }
-
-          // const receivedCount = Object.keys(response.results).length; // Not used
-
-          for (const [path, base64Data] of Object.entries(response.results)) {
-              if (base64Data && typeof base64Data === 'string') {
-                  try {
-                      const rawBlob = Buffer.from(base64Data, 'base64');
-                      const decodedNode = msgpack.decode(rawBlob);
-                      results.set(path, decodedNode);
-                  } catch (processingError) {
-                      console.error(`${logPrefix} Error processing data for path "${path}": ${processingError.message}`);
-                      results.set(path, null);
-                  }
-              } else {
-                  results.set(path, null);
-              }
-          }
-      } catch (error) {
-          console.error(`${logPrefix} SSH command execution or processing failed: ${error.stack || error}`);
-          pathsToFetch.forEach(path => {
-              if (!results.has(path)) {
-                  results.set(path, null);
-              }
-          });
-          throw error; // Re-throw original error after setting nulls
+        } else {
+          results.set(path, null);
+        }
       }
-      return results;
-  }
-
-  function updateCache(fetchedMap) {
-      const logPrefix = '[SQLZ updateCache]'; // Defined locally
-      let updatedCount = 0;
-      fetchedMap.forEach((value, key) => {
-          const oldValue = CACHE.get(key);
-          // Update if new value is not null OR if key wasn't present OR old value was null
-          if (value !== null || !CACHE.has(key) || oldValue === null) {
-               if (oldValue !== value) { // Only count actual changes/additions
-                  updatedCount++;
-               }
-              CACHE.set(key, value);
-          }
+    } catch (error) {
+      console.error(`${logPrefix} SSH command execution or processing failed: ${
+          error.stack || error}`);
+      pathsToFetch.forEach(path => {
+        if (!results.has(path)) {
+          results.set(path, null);
+        }
       });
-      if (updatedCount > 0) {
-          console.log(`${logPrefix} Updated/added ${updatedCount} node(s) to cache. Cache size: ${CACHE.size}`);
-      }
+      throw error;  
+    }
+    return results;
   }
 
+  // Simple cache update helper
+  function updateCache(fetchedMap) {
+    const logPrefix = '[SQLZ updateCache]';
+    let updatedCount = 0;
+    fetchedMap.forEach((value, key) => {
+      const oldValue = CACHE.get(key);
+      if (value !== null || !CACHE.has(key) || oldValue === null) {
+        if (oldValue !== value) {
+          updatedCount++;
+        }
+        CACHE.set(key, value);
+      }
+    });
+    if (updatedCount > 0) {
+      console.log(`${logPrefix} Updated/added ${
+          updatedCount} node(s) to cache. Cache size: ${CACHE.size}`);
+    }
+  }
+
+  /**
+   * Fetches an action node and ALL its required dependencies for UI display
+   * (children c.i, strategy s, s.a, s.s, s.s.HandKey) using multi-stage
+   * fetching, then reconstructs the node object in the cache.
+   * @param {string} basePath - The path of the action node to fetch/reconstruct
+   *     (e.g., '', 'c.0').
+   * @returns {Promise<object|null>} The fully reconstructed node object, or
+   *     null on failure.
+   */
   async function fetchAndReconstructActionNode(basePath) {
-      const logPrefix = `[SQLZ fetchAndReconstruct path="${basePath || '\'\''}"]`; // Defined locally
-      try {
-          // --- Stage 1: Fetch Action Node itself (if needed) ---
-          let actionNodeData = CACHE.get(basePath);
-          if (!actionNodeData || actionNodeData === null) {
-               console.log(`${logPrefix} Cache miss for base node. Fetching...`);
-              const nodeMap = await fetchNodesViaSSH([basePath]);
-              updateCache(nodeMap);
-              actionNodeData = CACHE.get(basePath);
-          }
+    const logPrefix = `[SQLZ fetchAndReconstruct path="${
+        basePath || '\'\''}"]`;  // Handle empty string path
+    console.log(
+        `${logPrefix} Starting multi-stage fetch and reconstruction...`);
 
-          if (!actionNodeData || typeof actionNodeData !== 'object' || actionNodeData.t !== 'a') {
-              console.error(`${logPrefix} Node at path "${basePath}" is not a valid Action Node. Data:`, actionNodeData);
-              CACHE.set(basePath, null); // Mark as invalid in cache
-              return null; // Return null on failure
-          }
-           console.log(`${logPrefix} Valid action node found/fetched for Stage 1.`);
-
-          // --- Stage 2: Fetch 'c' and 's' containers ---
-          const cPath = basePath === '' ? 'c' : `${basePath}.c`;
-          const sPath = basePath === '' ? 's' : `${basePath}.s`;
-          const stage2Paths = [];
-          if (actionNodeData.hasOwnProperty('c') && actionNodeData.c === null && (!CACHE.has(cPath) || CACHE.get(cPath) === null)) stage2Paths.push(cPath);
-          if (actionNodeData.hasOwnProperty('s') && actionNodeData.s === null && (!CACHE.has(sPath) || CACHE.get(sPath) === null)) stage2Paths.push(sPath);
-          if (stage2Paths.length > 0) {
-               console.log(`${logPrefix} Stage 2: Fetching containers: ${stage2Paths.join(', ')}`);
-              const stage2Map = await fetchNodesViaSSH(stage2Paths);
-              updateCache(stage2Map);
-          }
-           const sData = CACHE.get(sPath); // Get potentially fetched 's' data
-
-          // --- Stage 3: Fetch 's.a' and 's.s' structures if needed ---
-          const saPath = `${sPath}.a`;
-          const ssPath = `${sPath}.s`;
-          let stage3Paths = [];
-          if (sData && typeof sData === 'object') { // sData is the container node for s.a and s.s
-              if (sData.hasOwnProperty('a') && sData.a === null && (!CACHE.has(saPath) || CACHE.get(saPath) === null)) stage3Paths.push(saPath);
-              if (sData.hasOwnProperty('s') && sData.s === null && (!CACHE.has(ssPath) || CACHE.get(ssPath) === null)) stage3Paths.push(ssPath);
-          } else if (sData === null && actionNodeData.s === null) { // If 's' itself was pointer and not yet fetched
-               if (!CACHE.has(saPath)) stage3Paths.push(saPath);
-               if (!CACHE.has(ssPath)) stage3Paths.push(ssPath);
-          }
-          if (stage3Paths.length > 0) {
-               console.log(`${logPrefix} Stage 3: Fetching s.a/s.s structures: ${stage3Paths.join(', ')}`);
-              const stage3Map = await fetchNodesViaSSH(stage3Paths);
-              updateCache(stage3Map);
-          }
-           const ssDataStructure = CACHE.get(ssPath); // Structure like {'HandKey': null, ...} or actual data
-
-          // --- Stage 4: Fetch all 'c.i' children and 's.s.HandKey' details ---
-          let stage4Paths = [];
-          // Children paths (c.0, c.1, ...)
-          const numActions = Array.isArray(actionNodeData.a) ? actionNodeData.a.length : 0;
-          if (numActions > 0 && actionNodeData.hasOwnProperty('c')) {
-              for (let i = 0; i < numActions; i++) {
-                  const childPath = `${cPath}.${i}`; // e.g., c.0 or P.c.0
-                  if (!CACHE.has(childPath) || CACHE.get(childPath) === null) stage4Paths.push(childPath);
-              }
-          }
-
-          // Strategy hand detail paths (s.s.HandKey)
-          // let handKeys = []; // Not strictly needed
-          if (ssDataStructure && typeof ssDataStructure === 'object') {
-              // handKeys = Object.keys(ssDataStructure); // Not strictly needed
-              Object.keys(ssDataStructure).forEach(handKey => {
-                  if (ssDataStructure[handKey] === null) { // Only fetch if pointer is null
-                      const handPath = `${ssPath}.${handKey}`; // e.g., s.s.HandKey or P.s.s.HandKey
-                       if (!CACHE.has(handPath) || CACHE.get(handPath) === null) stage4Paths.push(handPath);
-                  } else { // Cache inline data if present (e.g., if ssDataStructure already had details)
-                      const handPath = `${ssPath}.${handKey}`;
-                       if (!CACHE.has(handPath)) CACHE.set(handPath, ssDataStructure[handKey]);
-                  }
-              });
-          }
-           if (stage4Paths.length > 0) {
-                console.log(`${logPrefix} Stage 4: Fetching ${stage4Paths.length} children/details...`);
-               const stage4FetchMap = await fetchNodesViaSSH(stage4Paths);
-               updateCache(stage4FetchMap); // Cache all results
-           }
-
-          // --- Stage 5: Reconstruct Action Node Object for Return ---
-           console.log(`${logPrefix} Stage 5: Reconstructing node object...`);
-          // Start with a deep copy of the base data fetched/found in Stage 1
-          let reconstructedNode = JSON.parse(JSON.stringify(CACHE.get(basePath)));
-
-          // Reconstruct 'c' array
-          if (reconstructedNode.hasOwnProperty('c') && reconstructedNode.c === null) {
-              const finalCArray = new Array(numActions).fill(null);
-              for (let i = 0; i < numActions; i++) {
-                  const childPath = `${cPath}.${i}`;
-                  finalCArray[i] = CACHE.get(childPath) ?? null; // Use fetched or null
-              }
-              reconstructedNode.c = finalCArray;
-          }
-
-          // Reconstruct 's' object
-           if (reconstructedNode.hasOwnProperty('s') && reconstructedNode.s === null) {
-               const sNodeFromCache = CACHE.get(sPath);
-               if (sNodeFromCache && typeof sNodeFromCache === 'object') {
-                   reconstructedNode.s = JSON.parse(JSON.stringify(sNodeFromCache)); // Deep copy 's' structure
-
-                   // Populate .s.a
-                   if (reconstructedNode.s.hasOwnProperty('a') && reconstructedNode.s.a === null) {
-                       reconstructedNode.s.a = CACHE.get(saPath) ?? null;
-                   }
-
-                   // Populate .s.s
-                   if (reconstructedNode.s.hasOwnProperty('s') && reconstructedNode.s.s === null) {
-                        const ssStructureFromCache = CACHE.get(ssPath);
-                        if (ssStructureFromCache && typeof ssStructureFromCache === 'object') {
-                           const finalSSObject = {};
-                           Object.keys(ssStructureFromCache).forEach(handKey => {
-                               const handPath = `${ssPath}.${handKey}`;
-                               // Use detail from cache if fetched, otherwise use original value (which might be non-null if already detailed)
-                               finalSSObject[handKey] = CACHE.get(handPath) ?? ssStructureFromCache[handKey];
-                           });
-                           reconstructedNode.s.s = finalSSObject;
-                        } else {
-                            // Assign null/invalid structure if that's what was cached/fetched for s.s container
-                           reconstructedNode.s.s = ssStructureFromCache ?? null;
-                        }
-                   }
-               } else {
-                   // Assign null if 's' container itself was null/invalid/not fetched
-                   reconstructedNode.s = sNodeFromCache ?? null;
-               }
-           }
-
-          // --- Update the cache with the reconstructed node ---
-           console.log(`${logPrefix} Reconstruction complete. Updating cache for base path.`);
-          CACHE.set(basePath, reconstructedNode); // Store the fully reconstructed node
-          return reconstructedNode; // Return the fully populated object
-
-      } catch (error) {
-          console.error(`${logPrefix} FAILED: ${error.message}`, error);
-          CACHE.set(basePath, null); // Ensure cache reflects failure for the base path
-          throw new Error(`SQLZ: Failed to fetch/reconstruct action node "${basePath}": ${error.message}`);
+    try {
+      // --- Stage 1: Fetch Action Node itself (if needed) ---
+      let actionNodeData = CACHE.get(basePath);
+      if (!actionNodeData || actionNodeData === null) {
+        console.log(`${logPrefix} Stage 1: Fetching action node itself...`);
+        const nodeMap = await fetchNodesViaSSH([basePath]);
+        updateCache(nodeMap);
+        actionNodeData = CACHE.get(basePath);
+      } else {
+        console.log(`${logPrefix} Stage 1: Action node already in cache.`);
       }
-  }
+
+      if (!actionNodeData || typeof actionNodeData !== 'object' ||
+          actionNodeData.t !== 'a') {
+        console.error(
+            `${logPrefix} Node at path "${
+                basePath}" is not a valid Action Node. Data:`,
+            actionNodeData);
+        CACHE.set(basePath, null);  // Mark as invalid in cache
+        return null;                // Return null on failure
+      }
+      console.log(`${logPrefix} Stage 1: Action node confirmed.`);
+
+      // --- Stage 2: Fetch 'c' and 's' containers ---
+      const cPath = basePath === '' ? 'c' : `${basePath}.c`;
+      const sPath = basePath === '' ? 's' : `${basePath}.s`;
+      const stage2Paths = [];
+      if (actionNodeData.hasOwnProperty('c') &&
+          (!CACHE.has(cPath) || CACHE.get(cPath) === null))
+        stage2Paths.push(cPath);
+      if (actionNodeData.hasOwnProperty('s') &&
+          (!CACHE.has(sPath) || CACHE.get(sPath) === null))
+        stage2Paths.push(sPath);
+
+      console.log(`${logPrefix} Stage 2: Fetching containers [${
+          stage2Paths.join(',')}]...`);
+      if (stage2Paths.length > 0) {
+        const stage2Map = await fetchNodesViaSSH(stage2Paths);
+        updateCache(stage2Map);
+      }
+      const sData = CACHE.get(sPath);  // Get potentially fetched 's' data
+
+      // --- Stage 3: Fetch 's.a' and 's.s' structures if needed ---
+      const saPath = `${sPath}.a`;
+      const ssPath = `${sPath}.s`;
+      let stage3Paths = [];
+      if (sData && typeof sData === 'object') {
+        if (sData.hasOwnProperty('a') && sData.a === null && !CACHE.has(saPath))
+          stage3Paths.push(saPath);
+        if (sData.hasOwnProperty('s') && sData.s === null && !CACHE.has(ssPath))
+          stage3Paths.push(ssPath);
+      } else if (sData === null && actionNodeData.s === null) {  // If 's'
+                                                                 // itself was
+                                                                 // pointer
+        if (!CACHE.has(saPath)) stage3Paths.push(saPath);
+        if (!CACHE.has(ssPath)) stage3Paths.push(ssPath);
+      }
+
+      console.log(`${logPrefix} Stage 3: Fetching s sub-containers [${
+          stage3Paths.join(',')}]...`);
+      if (stage3Paths.length > 0) {
+        const stage3Map = await fetchNodesViaSSH(stage3Paths);
+        updateCache(stage3Map);
+      }
+      const ssDataStructure =
+          CACHE.get(ssPath);  // Structure like {'HandKey': null, ...}
+
+      // --- Stage 4: Fetch all 'c.i' children and 's.s.HandKey' details ---
+      let stage4Paths = [];
+      // Children paths (c.0, c.1, ...)
+      const numActions =
+          Array.isArray(actionNodeData.a) ? actionNodeData.a.length : 0;
+      if (numActions > 0 && actionNodeData.hasOwnProperty('c')) {
+        for (let i = 0; i < numActions; i++) {
+          const childPath = `${cPath}.${i}`;  // e.g., c.0 or P.c.0
+          if (!CACHE.has(childPath)) stage4Paths.push(childPath);
+        }
+      }
+
+      // Strategy hand detail paths (s.s.HandKey)
+      let handKeys = [];
+      if (ssDataStructure && typeof ssDataStructure === 'object') {
+        handKeys = Object.keys(ssDataStructure);
+        handKeys.forEach(handKey => {
+          if (ssDataStructure[handKey] === null) {
+            const handPath =
+                `${ssPath}.${handKey}`;  // e.g., s.s.HandKey or P.s.s.HandKey
+            if (!CACHE.has(handPath)) stage4Paths.push(handPath);
+          } else {  // Cache inline data if present
+            const handPath = `${ssPath}.${handKey}`;
+            if (!CACHE.has(handPath))
+              CACHE.set(handPath, ssDataStructure[handKey]);
+          }
+        });
+      }
+      console.log(`${logPrefix} Stage 4: Identified ${numActions} children + ${
+          handKeys.length} hands. Needs fetch for ${stage4Paths.length}.`);
+
+
+      console.log(`${logPrefix} Stage 4: Fetching batch...`);
+      if (stage4Paths.length > 0) {
+        const stage4FetchMap = await fetchNodesViaSSH(stage4Paths);
+        updateCache(stage4FetchMap);  // Cache all results
+      }
+      console.log(
+          `${logPrefix} Stage 4: Fetch completed. Cache size: ${CACHE.size}`);
+
+      // --- Stage 5: Reconstruct Action Node Object for Return ---
+      console.log(
+          `${logPrefix} Stage 5: Reconstructing final node object for path "${
+              basePath}"...`);
+      // Start with a deep copy of the base data fetched/found in Stage 1
+      let reconstructedNode = JSON.parse(JSON.stringify(CACHE.get(basePath)));
+
+      // Reconstruct 'c' array
+      if (reconstructedNode.hasOwnProperty('c')) {
+        const finalCArray = new Array(numActions).fill(null);
+        for (let i = 0; i < numActions; i++) {
+          const childPath = `${cPath}.${i}`;
+          finalCArray[i] = CACHE.get(childPath) ?? null;  // Use fetched or null
+        }
+        reconstructedNode.c = finalCArray;
+      }
+
+      // Reconstruct 's' object
+      if (reconstructedNode.hasOwnProperty('s')) {
+        const sNodeFromCache = CACHE.get(sPath);
+        if (sNodeFromCache && typeof sNodeFromCache === 'object') {
+          reconstructedNode.s = JSON.parse(
+              JSON.stringify(sNodeFromCache));  // Deep copy 's' structure
+
+          // Populate .s.a
+          reconstructedNode.s.a = CACHE.get(saPath) ?? reconstructedNode.s.a;
+
+          // Populate .s.s
+          const ssStructureFromCache = CACHE.get(ssPath);
+          if (ssStructureFromCache &&
+              typeof ssStructureFromCache === 'object') {
+            const finalSSObject = {};
+            Object.keys(ssStructureFromCache).forEach(handKey => {
+              const handPath = `${ssPath}.${handKey}`;
+              finalSSObject[handKey] = CACHE.get(handPath) ??
+                  ssStructureFromCache[handKey];  // Use fetched detail or
+                                                  // original
+            });
+            reconstructedNode.s.s = finalSSObject;
+          } else {
+            reconstructedNode.s.s =
+                ssStructureFromCache;  // Assign null/invalid structure if
+                                       // that's what was cached
+          }
+        } else {
+          reconstructedNode.s =
+              sNodeFromCache;  // Assign null if 's' was null/invalid
+        }
+      }
+
+      // --- IMPORTANT: Update the cache with the reconstructed node ---
+      CACHE.set(basePath, reconstructedNode);
+      console.log(`${logPrefix} Reconstruction complete. Updated cache for "${
+          basePath}".`);
+      console.log(reconstructedNode);  // Optional: Log full reconstructed node
+
+      return reconstructedNode;  // Return the fully populated object
+
+    } catch (error) {
+      console.error(`${logPrefix} Failed: ${error.message}`, error);
+      // Ensure cache reflects failure for the base path
+      CACHE.set(basePath, null);
+      throw new Error(`SQLZ: Failed to fetch/reconstruct action node "${
+          basePath}": ${error.message}`);
+    }
+  }  // End fetchAndReconstructActionNode
 
 
   /** Public API */
   return {
-      async init(remoteDbPath, sshUserHost) {
-          // *** FIXED: Define logPrefix ***
-          const logPrefix = '[SQLZ init]';
-          REMOTE_DB_PATH = remoteDbPath;
-          SSH_USER_HOST = sshUserHost;
-          CACHE.clear();
-          console.log(`${logPrefix} Cache cleared. DB: ${REMOTE_DB_PATH}, Host: ${SSH_USER_HOST}`);
-          console.log(`${logPrefix} Initiating root node fetch/reconstruction...`);
-          // Perform the full fetch/reconstruct for the root node ('')
-          return fetchAndReconstructActionNode('');
-      },
+    /**
+     * Initialize SQLZ for a new solution. Performs the specific multi-stage
+     * fetch and reconstruction for the root node.
+     */
+    async init(remoteDbPath, sshUserHost) {
+      // ... (Código init existente - sem alterações) ...
+      const logPrefix = '[SQLZ init_v3]';  // Updated version prefix
+      console.log(`${logPrefix} Initializing with DB: ${remoteDbPath}, Host: ${
+          sshUserHost}`);
+      // --- Set module scope variables ---
+      REMOTE_DB_PATH = remoteDbPath;
+      SSH_USER_HOST = sshUserHost;
+      // ---------------------------------
+      CACHE.clear();
+      console.log(`${logPrefix} Cache cleared.`);
+      // Call the reconstruction function for the root path ('')
+      return fetchAndReconstructActionNode('');
+    },  // Fim do init
 
-      async subtree(requestedPath) {
-           // *** FIXED: Define logPrefix ***
-           const logPrefix = `[SQLZ subtree path="${requestedPath}"]`;
-          if (requestedPath === '') {
-              console.warn(`${logPrefix} Called for root path ''. Returning cached root (should be reconstructed by init).`);
-              return CACHE.get('');
+    /**
+     * Get data for a specific path.
+     * - If the path ends with '.<integer>.c' (In-Position Player node),
+     * first ensure its parent action node (path up to '.<integer>')
+     * is fully reconstructed, then fetch the requested node.
+     * - If the path corresponds to any other action node, trigger the
+     * full multi-stage fetch and reconstruction for it.
+     * - Otherwise, perform a simple fetch.
+     */
+    async subtree(requestedPath) {  // Renomeado para clareza
+      const logPrefix = `[SQLZ subtree_v3 path="${
+          requestedPath}"]`;  // Updated version prefix
+      console.log(`${logPrefix} Request received.`);
+
+      if (requestedPath === '') {
+        console.warn(`${
+            logPrefix} subtree called for root path ''. Returning cached root (should be reconstructed by init).`);
+        return CACHE.get('');
+      }
+
+      const playerNodeMatch = requestedPath.match(/^(.*)\.(\d+)\.c$/);
+      if (playerNodeMatch &&
+          currentDataSource === 'sqlz') {  
+        const parentActionPath =
+            `${playerNodeMatch[1]}.${playerNodeMatch[2]}`;  // Ex: 'c.1'
+        const originalChildPath = requestedPath;            // Ex: 'c.1.c'
+
+        console.log(`${
+            logPrefix} Detected player node request. Parent action path: "${
+            parentActionPath}". Original child path: "${originalChildPath}"`);
+
+        try {
+          console.log(`${logPrefix} Ensuring parent action node "${
+              parentActionPath}" is reconstructed...`);
+          let parentNode = CACHE.get(parentActionPath);
+          let parentNeedsReconstruction = !parentNode ||
+              (typeof parentNode === 'object' && parentNode.t === 'a' &&
+               parentNode.c === null);  
+
+          if (parentNeedsReconstruction) {
+            console.log(`${logPrefix} Parent "${
+                parentActionPath}" needs reconstruction. Calling fetchAndReconstructActionNode...`);
+            parentNode = await fetchAndReconstructActionNode(parentActionPath);
+          } else {
+            console.log(`${logPrefix} Parent "${
+                parentActionPath}" found in cache and appears reconstructed.`);
           }
 
-           // Check cache first
-           const cachedData = CACHE.get(requestedPath);
-           // If cached data exists AND it's not an action node needing reconstruction
-           if (cachedData !== undefined && !(typeof cachedData === 'object' && cachedData !== null && cachedData.t === 'a' && cachedData.c === null)) {
-                console.log(`${logPrefix} Found valid data in cache. Returning cached data.`);
-                return cachedData; // Return cached data (could be null if previously failed)
-           }
+          if (!parentNode) {
+            console.error(`${logPrefix} Parent action node "${
+                parentActionPath}" could not be loaded or reconstructed. Cannot proceed for child "${
+                originalChildPath}".`);
+            return null;  
+          }
 
-           console.log(`${logPrefix} Cache miss or requires reconstruction. Triggering fetch/reconstruction logic...`);
+          console.log(`${logPrefix} Parent action node "${
+              parentActionPath}" confirmed ready.`);
 
-           // Determine if we need full reconstruction or just fetching this node
-           // Simple heuristic: If path looks like an action node child index (e.g., .c.0), reconstruct parent first.
-           // Otherwise, assume reconstruction might be needed for the path itself if it's an action node.
-           const playerNodeMatch = requestedPath.match(/^(.*)\.(\d+)$/); // Matches "...c.0", "...s.s.HandKey" etc.
+        } catch (parentError) {
+          console.error(
+              `${logPrefix} Error reconstructing parent node "${
+                  parentActionPath}": ${parentError.message}`,
+              parentError);
+          CACHE.set(parentActionPath, null);  
+          CACHE.set(
+              originalChildPath, null);  
+          return null;
+        }
 
-           try {
-               // If the requested path itself might be an action node that needs full children/strategy
-               // We trigger the full reconstruction for it.
-               // fetchAndReconstructActionNode handles checking if it's actually an action node internally.
-               // If it's NOT an action node, fetchAndReconstructActionNode will still fetch it (Stage 1)
-               // but won't proceed with unnecessary stages, and will cache the result.
-                console.log(`${logPrefix} Attempting fetchAndReconstructActionNode for the requested path itself...`);
-               const nodeData = await fetchAndReconstructActionNode(requestedPath);
+        console.log(`${
+            logPrefix} Parent ready. Now retrieving the '.c' property from the reconstructed parent node "${
+            parentActionPath}"...`);
 
-                console.log(`${logPrefix} Operation complete. Returning data.`);
-               return nodeData; // Return whatever fetchAndReconstructActionNode resolved to (node or null)
+        const reconstructedParentNode = CACHE.get(parentActionPath);
 
-           } catch (error) {
-                console.error(`${logPrefix} FAILED for path "${requestedPath}": ${error.message}`);
-               CACHE.set(requestedPath, null); // Cache the failure
-               return null;
-           }
-      },
+        if (reconstructedParentNode &&
+            reconstructedParentNode.c !== undefined &&
+            Array.isArray(reconstructedParentNode.c)) {
+          console.log(`${
+              logPrefix} Returning the '.c' array from the reconstructed parent "${
+              parentActionPath}". Array length: ${
+              reconstructedParentNode.c.length}`);
+          return reconstructedParentNode.c;
+        } else {
+          console.error(
+              `${logPrefix} Reconstructed parent node "${
+                  parentActionPath}" is missing, or its '.c' property is missing/not an array after reconstruction! Parent Node:`,
+              reconstructedParentNode);
+          CACHE.set(originalChildPath, null);  
+          return null;
+        }
 
-      close() {
-          console.log('[SQLZ close] Closing and clearing cache.');
-          CACHE.clear();
-          REMOTE_DB_PATH = null;
-          SSH_USER_HOST = null;
-      },
+      }  
+      let nodeData = CACHE.get(requestedPath);
+      let needsReconstruction = nodeData && typeof nodeData === 'object' &&
+          nodeData.t === 'a' && nodeData.c === null;
 
-      isActive() {
-          const active = REMOTE_DB_PATH !== null && SSH_USER_HOST !== null;
-          return active;
+      if (nodeData !== undefined && nodeData !== null && !needsReconstruction) {
+        console.log(`${logPrefix} Found valid, non-null${
+            needsReconstruction ? ' (but needs reconstruction)' :
+                                  ''} data in cache. Returning cached data.`);
+        return nodeData;  
+      } else if (nodeData === null) {
+        console.log(`${
+            logPrefix} Found explicit null in cache. Will attempt fetch and potentially reconstruct.`);
+      } else if (needsReconstruction) {
+        console.log(`${
+            logPrefix} Found action node in cache, but needs reconstruction (c is null).`);
+      } else {
+        console.log(`${logPrefix} Not found in cache. Fetching...`);
       }
-  };
-})();
+
+      try {
+        if (needsReconstruction) {
+          console.log(`${
+              logPrefix} Triggering reconstruction for cached action node...`);
+          nodeData = await fetchAndReconstructActionNode(requestedPath);
+        } else {
+          console.log(`${logPrefix} Calling fetchNodesViaSSH for ["${
+              requestedPath}"]...`);
+          const fetchedMap = await fetchNodesViaSSH([requestedPath]);
+          updateCache(fetchedMap);
+          nodeData = CACHE.get(requestedPath);
+
+          if (nodeData === null || nodeData === undefined) {
+            console.error(`${logPrefix} Fetch completed, but path "${
+                requestedPath}" is still null/undefined in cache. Cannot proceed.`);
+            return null;
+          }
+
+          if (nodeData && typeof nodeData === 'object' && nodeData.t === 'a') {
+            console.log(`${
+                logPrefix} Fetched node is an action node. Triggering full reconstruction...`);
+            nodeData = await fetchAndReconstructActionNode(requestedPath);
+          } else {
+            console.log(`${
+                logPrefix} Node is not an action node OR already reconstructed. Reconstruction not required.`);
+          }
+        }  
+
+        console.log(
+            `${logPrefix} Operation complete. Returning data for path "${
+                requestedPath}"`);
+        return nodeData;
+
+      } catch (error) {
+        console.error(`${logPrefix} Failed for path "${requestedPath}": ${
+            error.message}`);
+        CACHE.set(requestedPath, null);  
+        return null;
+      }
+    },  
+
+    /** Clear cache and reset state */
+    close() {
+      console.log('[SQLZ close] Closing and clearing cache.');
+      CACHE.clear();
+      REMOTE_DB_PATH = null;
+      SSH_USER_HOST = null;
+    },  
+
+    /** Check if currently active */
+    isActive() {
+      const active = REMOTE_DB_PATH !== null && SSH_USER_HOST !== null;
+      return active;
+    }  
+  };  
+})();  
 
 // --- State Management for Data Source ---
 let currentDataSource =
@@ -998,7 +1186,7 @@ ipcMain.handle('run-solver', async (event, netid) => {
 
   const remoteHost = 'node.zoo.cs.yale.edu';
   const sshUserHost = `${netid}@${remoteHost}`;
-  const remoteDir = '~/yale-poker';
+  const remoteDir = '~/yale-poker-solver';
   const remoteDbPath = `${remoteDir}/output_result.msgpack.sqlite`;
 
   const localInstallDirForRsync = OPERATIONAL_INSTALL_DIR;
