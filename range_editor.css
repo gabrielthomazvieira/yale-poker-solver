@@ -1,0 +1,138 @@
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+}
+
+#range-editor-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+}
+
+#range-grid {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    gap: 5px;
+    margin: 0 auto 20px;
+}
+
+.grid-cell {
+    position: relative;
+    padding: 8px 0;
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    text-align: center;
+    font-size: 1.1em;
+    user-select: none;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-cell:hover {
+    background-color: #3a3a3a;
+    transform: scale(1.05);
+}
+
+.grid-cell.selected {
+    color: #fff;
+    border-color: #005fa3;
+}
+
+.grid-cell .frequency-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #007acc;
+    z-index: 0;
+    opacity: 0.7;
+}
+
+.grid-cell .hand-text {
+    position: relative;
+    z-index: 1;
+}
+
+.suited {
+    color: #e05656; /* Red for suited hands */
+}
+
+.offsuit {
+    color: #5acce0; /* Blue for offsuit hands */
+}
+
+.pair {
+    color: #e0e0e0; /* White for pairs */
+}
+
+.grid-cell.selected .suited,
+.grid-cell.selected .offsuit,
+.grid-cell.selected .pair {
+    color: #ffffff; /* All text white when selected */
+}
+
+#controls {
+    margin-top: 20px;
+    text-align: center;
+}
+
+#controls p {
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    color: #aaa;
+}
+
+button {
+    background-color: #005fa3;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    margin: 0 5px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+button:hover {
+    background-color: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+    background-color: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#frequency-popup {
+    color: #e0e0e0;
+}
+
+#frequency-popup input {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 5px;
+    border-radius: 4px;
+    margin: 0 10px;
+}
+
+#frequency-popup button {
+    padding: 5px 10px;
+    margin-left: 5px;
+}

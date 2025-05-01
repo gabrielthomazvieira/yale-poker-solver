@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Login - Poker Solver</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        /* Optional: Center the login form */
+        #login-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #login-form {
+            background-color: #1f1f1f;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        #login-form label,
+        #login-form input,
+        #login-form button {
+            margin: 10px;
+        }
+
+        #login-form input {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        #login-form button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007acc;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="login-container">
+        <div id="login-form">
+            <h2>Login</h2>
+            <label for="netid">NetID:</label>
+            <input type="text" id="netid" placeholder="e.g., gt383" />
+            <button id="loginBtn">Login</button>
+            <div id="login-error" style="color: red; margin-top: 10px;"></div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', async () => {
+            const loginBtn = document.getElementById('loginBtn');
+            const netidInput = document.getElementById('netid');
+            const errorDiv = document.getElementById('login-error');
+
+            // Disable the button immediately to prevent repeated clicks.
+            loginBtn.disabled = true;
+            errorDiv.textContent = '';
+
+            const netid = netidInput.value.trim();
+            if (!netid) {
+                errorDiv.textContent = 'Please enter a valid NetID.';
+                loginBtn.disabled = false;  // Re-enable on error.
+                return;
+            }
+
+            // Call the IPC login method via the exposed API.
+            const response = await window.electronAPI.login(netid);
+            if (response.success) {
+                // On success, open the solver window.
+                await window.electronAPI.openSolverWindow();
+            } else {
+                errorDiv.textContent = 'Login failed: Please check your NetID and SSH key setup (run ssh-keygen if needed).';
+                loginBtn.disabled = false; // Re-enable if login fails.
+            }
+        });
+    </script>
+</body>
+
+</html>

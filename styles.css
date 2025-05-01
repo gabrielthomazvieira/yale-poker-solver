@@ -1,0 +1,1029 @@
+/* Import font: Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+/* ------------------------------ */
+/* Global Reset & Base Styling    */
+/* ------------------------------ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: #121212;
+    color: #e0e0e0;
+    line-height: 1.5;
+}
+
+/* Centered Document Container (Responsive) */
+#doc {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* ------------------------------ */
+/* Header Styles                  */
+/* ------------------------------ */
+#hd {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-bottom: 1px solid #333;
+
+    /* run‑solver LEFT, flop picker RIGHT */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#hd h1 {
+    font-size: 1.8em;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+#netid-input {
+    margin-bottom: 10px;
+}
+
+#netid-input label {
+    margin-right: 10px;
+    color: #e0e0e0;
+}
+
+#netid-input input {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+#netid-input button {
+    background-color: #005fa3;
+    border: none;
+    color: #fff;
+    padding: 8px 12px;
+    margin-left: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#netid-input button:hover {
+    background-color: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#netid-input button:active {
+    background-color: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#netid-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    /* spacing between label and button */
+}
+
+/* ------------------------------ */
+/* Main Body Layout               */
+/* ------------------------------ */
+#bd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px 0;
+    background-color: #181818;
+}
+
+/* Left Column: JSON Viewer */
+#yui-main {
+    flex: 2;
+    min-width: 300px;
+}
+
+.yui-b {
+    flex: 1;
+    min-width: 520px;
+}
+
+#json-viewer {
+    background-color: #252526;
+    border: 1px solid #3c3c3c;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 300px;
+    overflow: auto;
+}
+
+/* JSON tree nodes: normal weight by default, bold when expanded */
+#json-viewer .json-node {
+    font-weight: normal;
+}
+
+#json-viewer .json-node-expanded {
+    font-weight: bold;
+}
+
+/* Right Column: Poker Chart */
+#secondary {
+    background-color: #252526;
+    border: 1px solid #3c3c3c;
+    padding: 15px;
+    border-radius: 8px;
+    min-height: 300px;
+    overflow: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Changes poker chart font to black */
+#secondary td {
+    color: #000 !important;
+}
+
+/* Dropdown menus inserted in the left column (if any) */
+#yui-main div label {
+    font-weight: 500;
+    margin-right: 5px;
+    color: #e0e0e0;
+}
+
+#yui-main select {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #e0e0e0;
+    padding: 6px;
+    border-radius: 4px;
+}
+
+#runSolverBtn {
+    background: #005fa3;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    margin-left: 10px;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+#runSolverBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: #004779;
+}
+
+#runSolverBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #002d4d;
+}
+
+/* ---------- EV DETAILS PANEL ---------- */
+#ev-display {
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    max-width: 100%;
+    font-size: .9rem;
+}
+
+#ev-display h4 {
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.ev-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 8px;
+}
+
+.ev-card {
+    background: #252526;
+    border: 1px solid #3c3c3c;
+    border-radius: 6px;
+    padding: 6px 4px;
+    text-align: center;
+    transition: transform .15s ease;
+}
+
+.ev-card:hover {
+    transform: translateY(-2px);
+}
+
+.ev-card .hand {
+    display: block;
+    font-weight: 500;
+    color: #000000;
+    margin-bottom: 2px;
+}
+
+.ev-card .ev,
+.ev-card .eq {
+    display: block;
+    color: #000000;
+    font-size: .85em;
+}
+
+
+/* ------------------------------ */
+/* Flop Board Selection Styling   */
+/* ------------------------------ */
+#flop-selection {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+    position: relative;
+    margin: 0;
+    text-align: right;
+}
+
+#flop-selection label {
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+
+.dropdown-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+#flop-board {
+    width: 190px;
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    margin-bottom: 0;
+    text-align: center;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.dropdown-toggle {
+    background-color: #005fa3;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    margin-left: 8px;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown-toggle:hover {
+    background-color: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-toggle:active {
+    background-color: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#card-grid-dropdown {
+    display: none;
+    /* remains toggled via JS */
+    position: absolute;
+    top: calc(100% + 8px);
+    /* 8 px below the flop‑input row */
+    left: 0;
+    width: 600px;
+    /* fixed width of the grid */
+    max-width: 600px;
+    background: #1f1f1f;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    z-index: 1000;
+    /* sit on top of other header items */
+}
+
+.apply-btn {
+    background: #005fa3;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 10px 20px;
+    margin-top: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: #004779;
+}
+
+.apply-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #002d4d;
+}
+
+#card-grid {
+    display: grid;
+    grid-template-columns: repeat(13, 1fr);
+    gap: 5px;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.card {
+    padding: 8px 0;
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    text-align: center;
+    font-size: 1.1em;
+    user-select: none;
+}
+
+.card:hover {
+    background-color: #3a3a3a;
+    transform: scale(1.05);
+}
+
+.card.selected {
+    background-color: #007acc;
+    color: #fff;
+    border-color: #005fa3;
+}
+
+.underline {
+    text-decoration: underline;
+    color: #007acc;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* ─── EQ BUCKETS PANEL ───────────────────────────────────────── */
+#eq-buckets {
+    margin-top: 16px;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+}
+
+.eq-bucket {
+    margin-bottom: 12px;
+}
+
+.eq-bucket:last-child {
+    margin-bottom: 0;
+}
+
+.eq-bucket-title {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.eq-bucket-title .oop {
+    color: #e05656;
+}
+
+.eq-bucket-title .ip {
+    color: #5acce0;
+}
+
+.eq-bar {
+    position: relative;
+    height: 12px;
+    background: #333;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+/* position, size and fade all bars by default */
+.eq-bar .oop-bar,
+.eq-bar .ip-bar {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+/* only the highest in each bucket is fully opaque */
+.eq-bar .high {
+    opacity: 1;
+}
+
+/* left‑growing, oop bar */
+.eq-bar .oop-bar {
+    background: #e05656;
+    transform-origin: left;
+}
+
+/* right‑growing, ip bar */
+.eq-bar .ip-bar {
+    background: #5acce0;
+    transform-origin: right;
+}
+
+/* ─── EQ BUCKETS LEGEND ───────────────────────────────────────── */
+.eq-legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #bbb;
+    margin-bottom: 8px;
+}
+
+.eq-legend .label {
+    display: flex;
+    align-items: center;
+}
+
+.eq-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+.eq-legend .oop .dot {
+    background: #e05656;
+}
+
+.eq-legend .ip .dot {
+    background: #5acce0;
+}
+
+/* --- Equity/Strategy Row Layout --- */
+#equity-strategy-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.equity-column {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+    margin-top: 0 !important;
+}
+
+/* --- Equity Strategy Chart Specific Styles --- */
+#eq-strategy-chart h4 {
+    margin: 0 0 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #e0e0e0;
+}
+
+.equity-strategy-bucket {
+    margin-bottom: 12px;
+}
+
+.equity-strategy-bucket:last-child {
+    margin-bottom: 0;
+}
+
+.equity-strategy-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #bbb;
+    display: block;
+    text-align: center;
+}
+
+.strategy-bar-container {
+    display: flex;
+    height: 18px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #333;
+    margin-bottom: 4px;
+}
+
+.strategy-bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    color: #000;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: width 0.3s ease-in-out;
+}
+
+.strategy-bar {
+    min-width: 1px;
+}
+
+.action-details {
+    display: flex;
+    justify-content: space-around;
+    /* Distribute action labels evenly */
+    font-size: 0.8em;
+    color: #aaa;
+}
+
+.action-detail {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.action-color-box {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    display: inline-block;
+}
+
+/* ─── Equity Distribution Chart ───────────────────────────────────── */
+#eq-dist-container {
+    margin: 0 0;
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 0.9rem;
+}
+
+#eq-dist-container h4 {
+    margin: 0 0 8px;
+    color: #e0e0e0;
+    font-weight: 600;
+    text-align: center;
+}
+
+#eq-dist-chart {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+}
+
+#eq-dist-tooltip {
+    z-index: 10;
+    white-space: nowrap;
+}
+
+#eq-dist-tooltip .ip {
+    color: #5acce0;
+    /* IP blue */
+}
+
+#eq-dist-tooltip .oop {
+    color: #e05656;
+    /* OOP red */
+}
+
+
+/* ─── Fullscreen Styles & Buttons ─────────────────────────────────── */
+#eq-dist-container {
+    position: relative;
+}
+
+#eq-dist-container .expand-btn,
+#eq-dist-container .close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+}
+
+#eq-dist-container .expand-btn:hover,
+#eq-dist-container .close-btn:hover {
+    color: #fff;
+}
+
+/* ─── Fullscreen Styles (width only) ───────────────────────────── */
+#eq-dist-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: #1e1e1e;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 10000;
+    overflow: auto;
+}
+
+#eq-dist-container.fullscreen canvas {
+    /* let JS resize it */
+}
+
+#eq-dist-container.fullscreen #eq-dist-tooltip {
+    z-index: 10001;
+}
+
+/* ─── Equity Dist Chart Legend ─────────────────────────────────────── */
+#eq-dist-container {
+    position: relative;
+    /* ensure legend can be absolutely positioned */
+}
+
+.eq-dist-legend {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 6px 10px;
+    border-radius: 4px;
+    display: flex;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: #e0e0e0;
+}
+
+.eq-dist-legend .legend-item {
+    display: flex;
+    align-items: center;
+}
+
+.eq-dist-legend .color-box {
+    width: 12px;
+    height: 12px;
+    margin-right: 6px;
+    border-radius: 2px;
+}
+
+.eq-dist-legend .color-box.ip {
+    background: #5acce0;
+}
+
+.eq-dist-legend .color-box.oop {
+    background: #e05656;
+}
+
+/* ------------------------------ */
+/* Footer Styles                  */
+/* ------------------------------ */
+#ft {
+    background-color: #1f1f1f;
+    padding: 15px;
+    border-top: 1px solid #333;
+}
+
+#footer {
+    min-height: 50px;
+    overflow: auto;
+}
+
+/* ─── Chatbot UI ───────────────────────────────────────────────── */
+#chatbot-wrapper {
+    width: 80%;
+    margin: 24px auto;
+}
+
+#chatbot {
+    background: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    padding-top: 12px;
+    min-height: 40vh;
+    /* >= 20% of viewport height as fallback */
+    height: 300px;
+    /* JS will overwrite to match equity chart's height */
+    overflow: hidden;
+}
+
+#chatbot-title {
+    text-align: center;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #cccccc;
+    font-size: 1.1em;
+}
+
+#chat-messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-right: 4px;
+    /* scrollbar clearance */
+}
+
+/* Chat bubbles */
+.chat-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: .95rem;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateX(30px);
+    animation: slideIn .25s forwards ease-out;
+    white-space: pre-line;
+}
+
+.chat-bubble.user {
+    align-self: flex-end;
+    /* right side */
+    margin-left: auto;
+    /* push fully right */
+    background: #007aff;
+    color: #fff;
+}
+
+.chat-bubble.bot {
+    /* left-aligned grey bubble */
+    align-self: flex-start;
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ─── Bot “thinking” animation ─────────────────────────────── */
+.chat-bubble.thinking {
+    /* grey bubble kept */
+    background: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.chat-bubble.thinking .dot {
+    display: inline-block;
+    font-weight: bold;
+    animation: bounceDot 1.2s infinite ease-in-out;
+}
+
+.chat-bubble.thinking .dot1 {
+    animation-delay: 0s;
+}
+
+.chat-bubble.thinking .dot2 {
+    animation-delay: 0.20s;
+}
+
+.chat-bubble.thinking .dot3 {
+    animation-delay: 0.40s;
+}
+
+@keyframes bounceDot {
+
+    0%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-4px);
+    }
+}
+
+/* Input row */
+#chat-input-area {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-shrink: 0;
+}
+
+#chat-input {
+    flex: 1 1 auto;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 20px;
+    padding: 10px 14px;
+    color: #e0e0e0;
+    font-size: 1rem;
+}
+
+#chat-send-btn {
+    background: #005fa3;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    padding: 0 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#chat-send-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    background-color: #004779;
+}
+
+#chat-send-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: #002d4d;
+}
+
+/* ─── Sample-solutions dropdown ───────────────────────────────── */
+#browseSampleBtn {
+    background: #005fa3;
+    border: none;
+    color: #fff;
+    font-weight: bold;
+    padding: 8px 15px;
+    font-size: 0.9em;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    margin-left: 10px;
+}
+
+#browseSampleBtn:hover {
+    background-color: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#browseSampleBtn:active {
+    background-color: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Style for the new Save Solution button */
+#saveSolutionBtn {
+    background: #005fa3;
+    /* Green background */
+    border: none;
+    color: white;
+    font-weight: bold;
+    padding: 8px 15px;
+    /* Match smaller size */
+    font-size: 0.9em;
+    /* Match smaller font */
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    margin-left: 5px;
+    /* Space between buttons */
+    display: none;
+    /* Initially hidden */
+}
+
+#saveSolutionBtn:hover {
+    background-color: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+#saveSolutionBtn:active {
+    background-color: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 6px;
+    min-width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.dropdown-content button {
+    width: 100%;
+    padding: 8px 16px;
+    background: #2a2a2a;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    color: #e0e0e0;
+    font-weight: 500;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.dropdown-content button:last-child {
+    margin-bottom: 0;
+}
+
+.dropdown-content button:hover {
+    background: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    color: #ffffff;
+}
+
+.dropdown-content button:active {
+    background: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Add to your existing CSS */
+.placeholder-node .value.placeholder {
+    color: #888;
+    font-style: italic;
+}
+
+.placeholder-node .value.loading {
+    color: #0088cc;
+    font-style: italic;
+}
+
+.placeholder-node .value.error {
+    color: #cc0000;
+    font-style: italic;
+}
+
+.loading-indicator {
+    color: #0088cc;
+    font-style: italic;
+    padding: 5px 0 5px 20px;
+}
+
+.error-indicator {
+    color: #cc0000;
+    font-style: italic;
+    padding: 5px 0 5px 20px;
+}
+
+.empty-indicator {
+    color: #888;
+    font-style: italic;
+    padding: 5px 0 5px 20px;
+}
+
+
+.edit-range-btn {
+    background-color: #005fa3;
+    border: none;
+    color: #fff;
+    padding: 5px 10px; /* Adjusted padding */
+    margin-left: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 0.9em; /* Match other smaller buttons if needed */
+    font-weight: bold; /* Match other buttons */
+    vertical-align: middle; /* Align better with input */
+}
+
+.edit-range-btn:hover {
+    background-color: #004779;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.edit-range-btn:active {
+    background-color: #002d4d;
+    transform: translateY(0);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
+  <title>Poker Solver</title>
+  <!-- Link to the external stylesheet -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div id="doc">
+    <div id="hd">
+      <!-- LEFT — Run‑solver + NetID -->
+      <div id="netid-display">
+        <span id="netid-label">
+          Logged in as: <strong id="netid-value"></strong>
+        </span>
+        <button id="runSolverBtn">Run Solver</button>
+        <!-- REMOVED AFTER SQL SUBSTITUTED MSGPACK -->
+        <!-- Browse Sample Solutions -->
+        <!-- <div id="sample-dropdown-wrapper" class="dropdown">
+          <button id="browseSampleBtn">Saved&nbsp;Solutions ▾</button>
+          <div id="sampleDropdown" class="dropdown-content"></div>
+        </div>
+        <button id="saveSolutionBtn">Save Solution</button> -->
+      </div>
+
+      <!-- RIGHT — Flop picker & extras -->
+      <div id="flop-selection">
+        <label for="flop-board">Flop:</label>
+
+        <div class="dropdown-container">
+          <input type="text" id="flop-board" readonly placeholder="Click to select flop">
+        </div>
+
+        <div id="card-grid-dropdown">
+          <div id="card-grid"></div>
+        </div>
+
+        <button id="apply-flop-btn" class="apply-btn">Apply Flop</button>
+        <span id="customize-config" class="underline">Customize&nbsp;Parameters</span>
+      </div>
+    </div>
+    <div id="bd">
+      <!-- Left Column: JSON Viewer -->
+      <div id="yui-main">
+        <div class="content" id="json-viewer">
+          <!-- The JSON tree view will be injected here -->
+        </div>
+        <!-- Equity charts -->
+        <div id="equity-strategy-row">
+          <div id="eq-buckets" class="content equity-column"></div>
+          <div id="eq-strategy-chart" class="content equity-column">
+          </div>
+        </div>
+        <div id="eq-dist-container" class="content"></div>
+      </div>
+      <!-- Right Column: Poker Chart -->
+      <div class="yui-b">
+        <div id="secondary" class="content">
+          <!-- The poker chart will be rendered here -->
+        </div>
+      </div>
+    </div>
+    <!-- ─── Chatbot UI ─────────────────────────────────────────────── -->
+    <div id="chatbot-wrapper">
+      <div id="chatbot">
+        <h4 id="chatbot-title">AI Assistant</h4>
+        <div id="chat-messages"></div>
+
+        <form id="chat-input-area" autocomplete="off">
+          <input type="text" id="chat-input" placeholder="Type your message…" spellcheck="false" />
+          <button type="submit" id="chat-send-btn">➤</button>
+        </form>
+      </div>
+    </div>
+    <!-- ─────────────────────────────────────────────────────────────── -->
+    <div id="ft">
+      <div id="footer">
+        <!-- Progress logs will be printed here -->
+      </div>
+    </div>
+  </div>
+  <script src="./renderer.js"></script>
+  <script defer src="./chatbot.js"></script>
+</body>
+
+</html>

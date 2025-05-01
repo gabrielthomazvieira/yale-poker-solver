@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            font-size: 0.95em;
+        }
+
+        p {
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .detail {
+            font-size: 0.9em;
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border: 1px solid #444;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007acc;
+            color: white;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #005fa3;
+        }
+
+        .button-container {
+            text-align: right;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <form id="title-form">
+        <label for="title-input">Title:</label>
+        <input type="text" id="title-input" name="title" autofocus>
+        <div class="button-container">
+            <button type="submit">Save</button>
+        </div>
+    </form>
+
+    <p class="detail">Poker notation like AcKh will be converted to A♣K♥</p>
+
+    <script>
+        const form = document.getElementById('title-form');
+        const input = document.getElementById('title-input');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const title = input.value; // Get title, don't trim here, let main decide
+            if (window.electronAPI) {
+                window.electronAPI.submitTitle(title);
+                // Main process will close the window
+            } else {
+                console.error('preload script did not expose electronAPI');
+                alert('Error: Cannot communicate with main process.');
+            }
+        });
+
+        const cancelBtn = document.getElementById('cancel-btn');
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', () => {
+                window.close(); // Ask the browser window to close
+            });
+        }
+    </script>
+</body>
+
+</html>
