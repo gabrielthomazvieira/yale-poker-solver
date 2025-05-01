@@ -15,7 +15,7 @@
     * Optimal strategy heatmaps showing action frequencies for each hand.
     * Detailed EV/Equity breakdown on hover.
     * Equity distribution plots and bucketing ("strong", "good", "weak", "trash" hands).
-* **AI-Powered Chatbot:** Uses DeepSeek V3 via the OpenAI SDK to answer natural language questions about optimal strategy, hand strength, and EV, using context from the solver's output.
+* **AI-Powered Chatbot:** Uses DeepSeek V3 via the OpenAI SDK to answer natural language questions about optimal strategy, hand strength, and EV, using context from the solver's output. DeepSeek V3 is run serverless on Cloudflare Wrangler.
 * **Customizable Inputs:** Set board cards, starting ranges, stack sizes, pot size, and bet sizes.
 * **Efficient Data Handling:** Uses MessagePack for compact solver output and a lazy-loading SQLite database backend to handle large game trees efficiently in the UI.
 
