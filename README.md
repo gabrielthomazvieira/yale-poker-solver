@@ -40,10 +40,9 @@ The system consists of:
 
 * **Frontend:** Electron
 * **Solver:** C++17, OpenMP
-* **AI:** DeepSeek V3 API, OpenAI Python SDK
+* **AI:** DeepSeek V3 API, OpenAI Python SDK via Cloudflare Wrangler.
 * **Equity:** `holdem-eval` (external C library)
 * **Data:** JSON, MessagePack (`msgpack-c`), SQLite, Python
-* **Libraries:** `nlohmann/json` (C++), [Mention other key JS/Node libraries if applicable]
 * **Infrastructure:** Yale Zoo Linux Cluster, SSH, SCP
 
 ## Performance
