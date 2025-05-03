@@ -1,5 +1,5 @@
-#ifndef TEXASSOLVER_POKERSOLVER_H
-#define TEXASSOLVER_POKERSOLVER_H
+#ifndef POKER_SOLVER_H
+#define POKER_SOLVER_H
 
 #include <string>
 #include <vector>
@@ -63,4 +63,4 @@ public:
     const shared_ptr<GameTree> &getGameTree() const;
 };
 
-#endif // TEXASSOLVER_POKERSOLVER_H
+#endif // POKER_SOLVER_H
